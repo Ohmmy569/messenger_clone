@@ -14,28 +14,32 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+model Chat_rooms {
+  id    String  @id @default(uuid())
+  chats Chats[]
 }
 
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+model Chats {
+  id        String       @id @default(uuid())
+  messages  Messages[]
+  users     Users[]
+  chat_room Chat_rooms[]
 }
 
-model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+model Messages {
+  id        String  @id @default(uuid())
+  message   String
+  chat_id   String
+  chat      Chats   @relation(fields: [chat_id], references: [id])
+  isPicture Boolean
+}
+
+model Users {
+  id              String  @id @default(uuid())
+  email           String  @unique
+  password        String?
+  name            String
+  Chats           Chats?  @relation(fields: [chatsId], references: [id])
+  chatsId         String?
+  profile_picture String?
 }
